@@ -53,26 +53,25 @@ import os
 import numpy as np
 from flask import Flask, render_template, request, jsonify
 from PIL import Image
-from tensorflow.keras.preprocessing import image
-from transformers import AutoModelForImageClassification, AutoTokenizer
+from tensorflow.keras.models import load_model  # ✅ ADD THIS
 from huggingface_hub import hf_hub_download
 
-# Disable optimizations to avoid issues
+# Disable ONEDNN to prevent AVX/FMA errors on some CPUs
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = '0'
 
-# Download model from Hugging Face if needed, or load it directly
+# Hugging Face Model Repo
 MODEL_NAME = "vardhan2003/pneumonia-detection-model"
 
-# Load the model (This assumes your model is a TensorFlow model)
+# Download model file from Hugging Face Hub
 model_path = hf_hub_download(repo_id=MODEL_NAME, filename="pneumonia_detection_model.h5")
 model = load_model(model_path, compile=False)
 
+# Initialize Flask app
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return render_template("index.html")
-
 
 @app.route("/predict", methods=["POST"])
 def detect_result():
@@ -86,16 +85,14 @@ def detect_result():
     
     result = "positive" if prediction[0] > 0.5 else "negative"
     
-    return jsonify({"result": result, "prediction": prediction[0]})
-
+    return jsonify({"result": result, "prediction": float(prediction[0])})
 
 def process_uploaded_image(file_obj):
     img = Image.open(file_obj).convert('RGB')
     img = img.resize((256, 256))
     img_array = np.array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)  # Shape: (1, 256, 256, 3)
+    img_array = np.expand_dims(img_array, axis=0)
     return img_array
-
 
 # Use Waitress for production
 if __name__ == "__main__":
