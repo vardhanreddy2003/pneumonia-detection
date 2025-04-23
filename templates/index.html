@@ -1,72 +1,123 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pneumonia Detection</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f2f2f2;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #dfe9f3, #ffffff);
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
     }
 
     .container {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      text-align: center;
+      background: #fff;
+      padding: 30px 25px;
+      border-radius: 16px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
       width: 100%;
-      max-width: 400px;
+      max-width: 500px;
+      text-align: center;
     }
 
     h1 {
-      margin-bottom: 20px;
       color: #333;
+      margin-bottom: 24px;
+      font-size: 1.8rem;
     }
 
     input[type="file"] {
       margin: 20px 0;
-      padding: 10px;
-      border: 2px dashed #ccc;
-      border-radius: 10px;
-      cursor: pointer;
+      padding: 12px;
+      border: 2px dashed #bbb;
+      border-radius: 12px;
       width: 100%;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="file"]:hover {
+      border-color: #888;
     }
 
     button {
-      padding: 10px 20px;
-      background-color: #4CAF50;
-      border: none;
-      color: white;
-      border-radius: 5px;
+      margin-top: 15px;
+      padding: 12px 24px;
       font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
       transition: background 0.3s ease;
+      width: 100%;
     }
 
     button:hover {
       background-color: #45a049;
     }
 
-    .preview {
-      margin-top: 20px;
-    }
-
     .preview img {
       max-width: 100%;
-      border-radius: 10px;
-      margin-top: 10px;
+      margin-top: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     }
 
     .result {
-      margin-top: 20px;
+      margin-top: 30px;
+      font-size: 18px;
       font-weight: bold;
       color: #333;
+    }
+
+    .bar-container {
+      width: 100%;
+      background-color: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-top: 15px;
+      height: 25px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+      display: none;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(to right, #2196F3, #FF5252);
+      color: white;
+      text-align: center;
+      line-height: 25px;
+      font-weight: bold;
+      border-radius: 10px;
+      transition: width 0.6s ease;
+    }
+
+    @media screen and (max-width: 600px) {
+      .container {
+        padding: 20px;
+        border-radius: 12px;
+      }
+
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      button {
+        padding: 10px;
+        font-size: 15px;
+      }
     }
   </style>
 </head>
@@ -74,13 +125,18 @@
   <div class="container">
     <h1>Pneumonia Detector</h1>
     <form id="uploadForm">
-      <input type="file" name="image" id="imageInput" accept="image/*" required>
-      <br><br>
+      <input type="file" name="image" id="imageInput" accept="image/*" required />
+      <br />
       <button type="submit">Submit Image</button>
     </form>
+
     <div class="result" id="resultText"></div>
+    <div class="bar-container" id="barContainer">
+      <div class="bar-fill" id="barFill">0%</div>
+    </div>
+
     <div class="preview">
-      <img id="previewImage" src="" alt="" style="display:none;">
+      <img id="previewImage" src="" alt="" style="display:none;" />
     </div>
   </div>
 
@@ -89,6 +145,8 @@
     const imageInput = document.getElementById("imageInput");
     const resultText = document.getElementById("resultText");
     const previewImage = document.getElementById("previewImage");
+    const barContainer = document.getElementById("barContainer");
+    const barFill = document.getElementById("barFill");
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -96,19 +154,24 @@
       const file = imageInput.files[0];
       if (!file) return;
 
-      formData.append("image", file);
-
-      // Show preview
       previewImage.src = URL.createObjectURL(file);
       previewImage.style.display = "block";
+
+      formData.append("image", file);
 
       const response = await fetch("/predict", {
         method: "POST",
         body: formData,
       });
 
-      const result = await response.text();
-      resultText.textContent = `Prediction: ${result}`;
+      const result = await response.json();
+      const percentage = (result.prediction * 100).toFixed(1);
+
+      resultText.textContent = `Prediction Result: ${result.result.toUpperCase()}`;
+      barFill.style.width = `${percentage}%`;
+      barFill.textContent = `${percentage}%`;
+      barFill.style.background = `linear-gradient(to right, #2196F3, #FF5252 ${percentage}%)`;
+      barContainer.style.display = "block";
     });
   </script>
 </body>
