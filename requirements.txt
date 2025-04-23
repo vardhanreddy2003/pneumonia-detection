@@ -3,5 +3,5 @@ keras
 tensorflow
 pillow
 numpy
-sklearn
+scikit-learn
 gunicorn
