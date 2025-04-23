@@ -62,19 +62,54 @@
       border-radius: 10px;
       margin-top: 10px;
     }
+
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Pneumonia Detector</h1>
-    <form action="/predict" method="post" enctype="multipart/form-data">
-      <input type="file" name="image" accept="image/*" required>
+    <form id="uploadForm">
+      <input type="file" name="image" id="imageInput" accept="image/*" required>
       <br><br>
       <button type="submit">Submit Image</button>
     </form>
+    <div class="result" id="resultText"></div>
     <div class="preview">
-      <!-- Image preview would be here with JS -->
+      <img id="previewImage" src="" alt="" style="display:none;">
     </div>
   </div>
+
+  <script>
+    const form = document.getElementById("uploadForm");
+    const imageInput = document.getElementById("imageInput");
+    const resultText = document.getElementById("resultText");
+    const previewImage = document.getElementById("previewImage");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData();
+      const file = imageInput.files[0];
+      if (!file) return;
+
+      formData.append("image", file);
+
+      // Show preview
+      previewImage.src = URL.createObjectURL(file);
+      previewImage.style.display = "block";
+
+      const response = await fetch("/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.text();
+      resultText.textContent = `Prediction: ${result}`;
+    });
+  </script>
 </body>
 </html>
