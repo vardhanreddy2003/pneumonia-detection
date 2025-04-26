@@ -1,7 +1,10 @@
-Pneumonia Detection Model Deployment 🚑
+# Pneumonia Detection Model Deployment 🚑
+
+A deep learning-based pneumonia detection system deployed using Flask.
+🌐 Live Demo
 This project contains a deep learning model trained to detect pneumonia from chest X-ray images. The model is deployed using a Flask web application, allowing users to upload an image and receive a prediction.
 
-🛠 Project Structure
+## 🛠 Project Structure
 project
 ├── static/
 │   └── (CSS/JS/images if any)
