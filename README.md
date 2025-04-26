@@ -4,17 +4,6 @@ A deep learning-based pneumonia detection system deployed using Flask.
 🌐 Live Demo
 This project contains a deep learning model trained to detect pneumonia from chest X-ray images. The model is deployed using a Flask web application, allowing users to upload an image and receive a prediction.
 
-## 🛠 Project Structure
-project
-├── static/
-│   └── (CSS/JS/images if any)
-├── templates/
-│   └── index.html
-├── model/
-│   └── pneumonia_model.h5 (or your model file)
-├── app.py
-├── requirements.txt
-└── README.md
 🚀 Features
 Upload chest X-ray images via a web interface.
 
