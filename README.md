@@ -69,6 +69,17 @@ Can improve model performance
 Improve UI/UX.
 
 
+
+## AWS Deployment
+I also deployed the model on AWS ubuntu server.
+
+You can deploy using the terraform code  https://github.com/vardhanreddy2003/loadbalancer-terraform_code
+
+### Changes to be made :
+>ami_id(please change the ami id of your own ubuntu server)
+>instance_type should be "t2.micro"  or "t3.large"
+
+
 ## 🧑‍💻 Author
 Sai vardhan
 
